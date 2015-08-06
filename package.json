@@ -13,6 +13,7 @@
   "scripts": {
     "build": "babel-plugin build",
     "push": "babel-plugin publish",
+    "prepublish": "npm run build",
     "test": "mocha --compilers js:babel/register"
   },
   "keywords": [
