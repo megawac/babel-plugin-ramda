@@ -5,7 +5,7 @@ import {transformFileSync} from "babel";
 import plugin from "../src/index";
 import {trim} from "ramda";
 
-describe("Lodash modularized builds", () => {
+describe("Ramda modularized builds", () => {
   const fixturesDir = path.join(__dirname, "fixtures");
   const errorFixturesDir = path.join(__dirname, "error-fixtures");
 

@@ -10,7 +10,7 @@ export default function resolveModule(name) {
       return path.join('ramda/src', name);
     }
   }
-  throw new Error(`lodash method ${name} was not in known modules
-    Please file a bug if it's my fault https://github.com/megawac/babel-plugin-lodash/issues
+  throw new Error(`Ramda method ${name} was not a known function
+    Please file a bug if it's my fault https://github.com/megawac/babel-plugin-ramda/issues
   `);
 };
