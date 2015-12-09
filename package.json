@@ -22,7 +22,7 @@
     "babel-plugin"
   ],
   "dependencies": {
-    "ramda": "^0.17.1"
+    "ramda": "^0.18.0"
   },
   "babel": {
     "ignore": []
