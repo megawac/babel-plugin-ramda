@@ -1,26 +1,35 @@
 import resolveModule from './modules';
 
-export default function({ Plugin, types: t }) {
-  // Track the variables used to import ramda
-  let ramdas = Object.create(null);
-  let specified = Object.create(null);
-
-  // Track the methods that have already been used to prevent dupe imports
-  let selectedMethods = Object.create(null);
+export default function({ types: t }) {
+  // Tracking variables build during the AST pass. We instantiate
+  // these in the `Program` visitor in order to support running the
+  // plugin in watch mode or on multiple files.
+  let ramdas,
+      specified,
+      selectedMethods;
 
   // Import a ramda method and return the computed import identifier
   function importMethod(methodName, file) {
     if (!selectedMethods[methodName]) {
       let path = resolveModule(methodName);
-      selectedMethods[methodName] = file.addImport(path, methodName);
+      selectedMethods[methodName] = file.addImport(path, 'default');
     }
     return selectedMethods[methodName];
   }
 
-  return new Plugin("ramda", {
-
+  return {
     visitor: {
-      ImportDeclaration(node, parent, scope) {
+      Program: {
+        enter() {
+          // Track the variables used to import ramda
+          ramdas = Object.create(null);
+          specified = Object.create(null);
+          // Track the methods that have already been used to prevent dupe imports
+          selectedMethods = Object.create(null);
+        }
+      },
+      ImportDeclaration(path) {
+        let { node } = path;
         if (node.source.value === 'ramda') {
           node.specifiers.forEach(spec => {
             if (t.isImportSpecifier(spec)) {
@@ -29,34 +38,23 @@ export default function({ Plugin, types: t }) {
               ramdas[spec.local.name] = true;
             }
           });
-          this.dangerouslyRemove();
+          path.remove();
         }
       },
-
-      CallExpression(node, parent, scope, file) {
-        let {name} = node.callee;
+      CallExpression(path) {
+        let { node, hub } = path;
+        let { name } = node.callee;
+        let { file } = hub;
         if (!t.isIdentifier(node.callee)) return;
-        if (specified[name]) {
-          node.callee = importMethod(specified[name], file);
-          return node;
-        }
+        if (specified[name]) node.callee = importMethod(specified[name], file);
       },
-
-      MemberExpression(node, parent, scope, file) {
+      MemberExpression(path) {
+        let { node } = path;
+        let { file } = path.hub;
         if (!ramdas[node.object.name]) return;
-
         // R.foo() -> foo()
-        return importMethod(node.property.name, file);
-      },
-
-      exit(node) {
-        if (!t.isProgram(node)) return;
-        // Clean up tracking variables
-        ramdas = Object.create(null);
-        specified = Object.create(null);
-        selectedMethods = Object.create(null);
+        path.replaceWith(importMethod(node.property.name, file));
       }
     }
-
-  });
+  };
 }

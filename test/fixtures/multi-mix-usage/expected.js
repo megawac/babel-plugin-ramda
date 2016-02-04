@@ -1,23 +1,23 @@
 'use strict';
 
-var _ramdaSrcMap = require('ramda/src/map');
+var _reject = require('ramda/src/reject');
 
-var _ramdaSrcMap2 = _interopRequireDefault(_ramdaSrcMap);
+var _reject2 = _interopRequireDefault(_reject);
 
-var _ramdaSrcAdd = require('ramda/src/add');
+var _take = require('ramda/src/take');
 
-var _ramdaSrcAdd2 = _interopRequireDefault(_ramdaSrcAdd);
+var _take2 = _interopRequireDefault(_take);
 
-var _ramdaSrcTake = require('ramda/src/take');
+var _add = require('ramda/src/add');
 
-var _ramdaSrcTake2 = _interopRequireDefault(_ramdaSrcTake);
+var _add2 = _interopRequireDefault(_add);
 
-var _ramdaSrcReject = require('ramda/src/reject');
+var _map = require('ramda/src/map');
 
-var _ramdaSrcReject2 = _interopRequireDefault(_ramdaSrcReject);
+var _map2 = _interopRequireDefault(_map);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var mapper = (0, _ramdaSrcMap2['default'])((0, _ramdaSrcAdd2['default'])(1));
+var mapper = (0, _map2.default)((0, _add2.default)(1));
 var result = mapper([1, 2, 3]);
-(0, _ramdaSrcTake2['default'])(1, (0, _ramdaSrcReject2['default'])(Boolean, result));
+(0, _take2.default)(1, (0, _reject2.default)(Boolean, result));
