@@ -54,6 +54,14 @@ export default function({ types: t }) {
         if (!ramdas[node.object.name]) return;
         // R.foo() -> foo()
         path.replaceWith(importMethod(node.property.name, file));
+      },
+      Identifier(path) {
+        let { node, hub } = path;
+        let { name } = node;
+        let { file } = hub;
+        if (specified[name]) {
+          path.replaceWith(importMethod(specified[name], file));
+        }
       }
     }
   };
