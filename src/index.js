@@ -47,6 +47,14 @@ export default function({ types: t }) {
         let { file } = hub;
         if (!t.isIdentifier(node.callee)) return;
         if (specified[name]) node.callee = importMethod(specified[name], file);
+        if (node.arguments) {
+          node.arguments = node.arguments.map(arg => {
+            let { name } = arg;
+            return specified[name]
+              ? importMethod(specified[name], file)
+              : arg;
+          });
+        }
       },
       MemberExpression(path) {
         let { node } = path;
