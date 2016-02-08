@@ -31,6 +31,13 @@ map(add(1), [1, 2, 3]);
 
 - Imports are at top of file (we do the transform in one pass, if they are at the bottom of the file they may be missed)
 
+#### FAQ
+
+> I receive `TypeError: The plugin "lodash" didn’t export a Plugin instance`<br>
+> or, can I use this plugin with Babel v5?
+
+Babel v5 is no longer supported. Use [v0.1.2](https://github.com/megawac/babel-plugin-ramda/releases/tag/v0.1.2) for support.
+
 #### Usage
 
 ###### Via `.babelrc` (Recommended)

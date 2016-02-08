@@ -1,11 +1,11 @@
 {
   "name": "babel-plugin-ramda",
-  "version": "1.0.0",
+  "version": "0.1.2",
   "description": "Ramda modularized builds without the hassle",
   "repository": "megawac/babel-plugin-ramda",
   "author": "Graeme Yeates (github.com/megawac) <megawac@gmail.com>",
   "main": "lib/index.js",
-  "license": "wtfpl",
+  "license": "WTFPL",
   "devDependencies": {
     "babel-cli": "^6.4.5",
     "babel-core": "^6.4.5",
@@ -14,7 +14,6 @@
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
-    "prepublish": "npm run build",
     "test": "mocha --compilers js:babel-core/register"
   },
   "keywords": [
