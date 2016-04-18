@@ -1,7 +1,7 @@
 babel-plugin-ramda [![Build Status](https://travis-ci.org/megawac/babel-plugin-ramda.svg?branch=master)](https://travis-ci.org/megawac/babel-plugin-ramda)
 ==============
 
-This plugin is a simple transform to remove unused ramda dependencies, without forcing the user to cherry pick methods manually. This lets you use ramda naturally (aka as documented) without worrying about bundling parts you're not using.
+This plugin is a transform to remove unused ramda dependencies, without forcing the user to cherry pick methods manually. This lets you use ramda naturally (aka as documented) without worrying about bundling parts you're not using.
 
 See also [`babel-plugin-lodash`](https://github.com/megawac/babel-plugin-lodash).
 
@@ -28,8 +28,6 @@ map(add(1), [1, 2, 3]);
 #### Limitations
 
 - You must be using ES6 imports (both specifiers and default work) to load ramda.
-
-- Imports are at top of file (we do the transform in one pass, if they are at the bottom of the file they may be missed)
 
 #### FAQ
 
