@@ -65,10 +65,10 @@ export default function({ types: t }) {
         path.replaceWith({ type: newNode.type, name: newNode.name });
       },
       Identifier(path) {
-        let { node, hub } = path;
+        let { node, hub, parent } = path;
         let { name } = node;
         let { file } = hub;
-        if (specified[name]) {
+        if (specified[name] && t.isExpression(parent) && !t.isMemberExpression(parent)) {
           let newNode = importMethod(specified[name], file);
           path.replaceWith({ type: newNode.type, name: newNode.name });
         }
