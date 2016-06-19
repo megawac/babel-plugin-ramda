@@ -13,3 +13,13 @@ var obj = {
 var obj1 = {
 	[add]: 2
 };
+
+var ob2 = {
+    rate: add
+};
+
+function test(param = map) {
+    return param;
+}
+
+var test1 = (param2 = add) => add;

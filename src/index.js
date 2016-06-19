@@ -1,5 +1,11 @@
 import resolveModule from './modules';
 
+const SPECIAL_TYPES = ['isMemberExpression', 'isProperty'];
+
+function isSpecialTypes(t, node) {
+    return SPECIAL_TYPES.filter(type => t[type](node)).length > 0;
+}
+
 export default function({ types: t }) {
   // Tracking variables build during the AST pass. We instantiate
   // these in the `Program` visitor in order to support running the
@@ -64,11 +70,20 @@ export default function({ types: t }) {
         let newNode = importMethod(node.property.name, file);
         path.replaceWith({ type: newNode.type, name: newNode.name });
       },
+      Property(path) {
+        let { node, hub: { file } } = path;
+        if (t.isIdentifier(node.key) && node.computed && specified[node.key.name]) {
+          node.key = importMethod(specified[node.key.name], file);
+        }
+        if (t.isIdentifier(node.value) && specified[node.value.name]) {
+          node.value = importMethod(specified[node.value.name], file);
+        }
+      },
       Identifier(path) {
         let { node, hub, parent } = path;
         let { name } = node;
         let { file } = hub;
-        if (specified[name] && t.isExpression(parent) && !t.isMemberExpression(parent)) {
+        if (specified[name] && !isSpecialTypes(t, parent)) {
           let newNode = importMethod(specified[name], file);
           path.replaceWith({ type: newNode.type, name: newNode.name });
         }
