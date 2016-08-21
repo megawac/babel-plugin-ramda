@@ -25,7 +25,7 @@ export default function resolveModule(name) {
 
   for (var category in methods) {
     if (contains(name, methods)) {
-      return path.join('ramda/src', name);
+      return `ramda/src/${name}`;
     }
   }
   throw new Error(`Ramda method ${name} was not a known function
