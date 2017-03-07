@@ -31,12 +31,12 @@ var ob2 = {
 };
 
 function test() {
-  var param = arguments.length <= 0 || arguments[0] === undefined ? _map2.default : arguments[0];
+  var param = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _map2.default;
 
   return param;
 }
 
 var test1 = function test1() {
-  var param2 = arguments.length <= 0 || arguments[0] === undefined ? _add2.default : arguments[0];
+  var param2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _add2.default;
   return _add2.default;
 };

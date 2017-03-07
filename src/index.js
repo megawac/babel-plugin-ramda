@@ -20,7 +20,7 @@ export default function({ types: t }) {
       let path = resolveModule(methodName);
       selectedMethods[methodName] = file.addImport(path, 'default');
     }
-    return selectedMethods[methodName];
+    return t.clone(selectedMethods[methodName]);
   }
 
   return {
