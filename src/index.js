@@ -23,6 +23,18 @@ export default function({ types: t }) {
     return t.clone(selectedMethods[methodName]);
   }
 
+  function matchesRamda(path, name) {
+    return ramdas[name] && hasBindingOfType(path.scope, name, 'ImportDefaultSpecifier');
+  }
+
+  function matchesRamdaMethod(path, name) {
+    return specified[name] && hasBindingOfType(path.scope, name, 'ImportSpecifier');
+  }
+
+  function hasBindingOfType(scope, name, type) {
+    return scope.hasBinding(name) && scope.getBinding(name).path.type === type;
+  }
+
   return {
     visitor: {
       Program: {
@@ -52,11 +64,13 @@ export default function({ types: t }) {
         let { name } = node.callee;
         let { file } = hub;
         if (!t.isIdentifier(node.callee)) return;
-        if (specified[name]) node.callee = importMethod(specified[name], file);
+        if (matchesRamdaMethod(path, name)) {
+          node.callee = importMethod(specified[name], file);
+        }
         if (node.arguments) {
           node.arguments = node.arguments.map(arg => {
             let { name } = arg;
-            return specified[name]
+            return matchesRamdaMethod(path, name)
               ? importMethod(specified[name], file)
               : arg;
           });
@@ -65,25 +79,26 @@ export default function({ types: t }) {
       MemberExpression(path) {
         let { node } = path;
         let { file } = path.hub;
-        if (!ramdas[node.object.name]) return;
+        let objectName = node.object.name;
+        if (!matchesRamda(path, objectName)) return;
         // R.foo() -> foo()
         let newNode = importMethod(node.property.name, file);
         path.replaceWith({ type: newNode.type, name: newNode.name });
       },
       Property(path) {
         let { node, hub: { file } } = path;
-        if (t.isIdentifier(node.key) && node.computed && specified[node.key.name]) {
+        if (t.isIdentifier(node.key) && node.computed && matchesRamdaMethod(path, node.key.name)) {
           node.key = importMethod(specified[node.key.name], file);
         }
-        if (t.isIdentifier(node.value) && specified[node.value.name]) {
+        if (t.isIdentifier(node.value) && matchesRamdaMethod(path, node.value.name)) {
           node.value = importMethod(specified[node.value.name], file);
         }
       },
       Identifier(path) {
-        let { node, hub, parent } = path;
+        let { node, hub, parent, scope } = path;
         let { name } = node;
         let { file } = hub;
-        if (specified[name] && !isSpecialTypes(t, parent)) {
+        if (matchesRamdaMethod(path, name) && !isSpecialTypes(t, parent)) {
           let newNode = importMethod(specified[name], file);
           path.replaceWith({ type: newNode.type, name: newNode.name });
         }
