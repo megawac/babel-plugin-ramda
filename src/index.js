@@ -62,44 +62,42 @@ export default function({ types: t }) {
       CallExpression(path) {
         let { node, hub } = path;
         let { name } = node.callee;
-        let { file } = hub;
         if (!t.isIdentifier(node.callee)) return;
         if (matchesRamdaMethod(path, name)) {
-          node.callee = importMethod(specified[name], file);
+          node.callee = importMethod(specified[name], hub.file);
         }
         if (node.arguments) {
           node.arguments = node.arguments.map(arg => {
             let { name } = arg;
             return matchesRamdaMethod(path, name)
-              ? importMethod(specified[name], file)
+              ? importMethod(specified[name], hub.file)
               : arg;
           });
         }
       },
       MemberExpression(path) {
         let { node } = path;
-        let { file } = path.hub;
         let objectName = node.object.name;
         if (!matchesRamda(path, objectName)) return;
         // R.foo() -> foo()
-        let newNode = importMethod(node.property.name, file);
+        let newNode = importMethod(node.property.name, path.hub.file);
         path.replaceWith({ type: newNode.type, name: newNode.name });
       },
       Property(path) {
-        let { node, hub: { file } } = path;
+        let { node, hub } = path;
         if (t.isIdentifier(node.key) && node.computed && matchesRamdaMethod(path, node.key.name)) {
-          node.key = importMethod(specified[node.key.name], file);
+          node.key = importMethod(specified[node.key.name], hub.file);
         }
         if (t.isIdentifier(node.value) && matchesRamdaMethod(path, node.value.name)) {
-          node.value = importMethod(specified[node.value.name], file);
+          node.value = importMethod(specified[node.value.name], hub.file);
         }
       },
       Identifier(path) {
         let { node, hub, parent, scope } = path;
+
         let { name } = node;
-        let { file } = hub;
         if (matchesRamdaMethod(path, name) && !isSpecialTypes(t, parent)) {
-          let newNode = importMethod(specified[name], file);
+          let newNode = importMethod(specified[name], hub.file);
           path.replaceWith({ type: newNode.type, name: newNode.name });
         }
       }
