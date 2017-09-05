@@ -59,6 +59,20 @@ export default function({ types: t }) {
           path.remove();
         }
       },
+      ExportNamedDeclaration(path) {
+        let { node, hub } = path;
+        if (node.source && node.source.value === 'ramda') {
+          let specifiers = node.specifiers.map(spec => {
+            let importIdentifier = importMethod(spec.exported.name, hub.file);
+            console.log(spec);
+            let exportIdentifier = t.identifier(spec.local.name);
+            return t.exportSpecifier(importIdentifier, exportIdentifier);
+          });
+          // console.log(specifiers);
+          node.specifiers = specifiers;
+          node.source = null;
+        }
+      },
       CallExpression(path) {
         let { node, hub } = path;
         let { name } = node.callee;
