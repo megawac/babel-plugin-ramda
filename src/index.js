@@ -75,7 +75,10 @@ export default function({ types: t }) {
         }
       },
       ExportAllDeclaration(path) {
-        throw new Error('`export * from "ramda"` defeats the purpose of babel-plugin-ramda');
+        let { node } = path;
+        if (node.source && node.source.value === 'ramda') {
+          throw new Error('`export * from "ramda"` defeats the purpose of babel-plugin-ramda');
+        }
       },
       CallExpression(path) {
         let { node, hub } = path;
