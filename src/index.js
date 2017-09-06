@@ -24,7 +24,10 @@ export default function({ types: t }) {
   }
 
   function matchesRamda(path, name) {
-    return ramdas[name] && hasBindingOfType(path.scope, name, 'ImportDefaultSpecifier');
+    return ramdas[name] && (
+      hasBindingOfType(path.scope, name, 'ImportDefaultSpecifier') ||
+      hasBindingOfType(path.scope, name, 'ImportNamespaceSpecifier')
+    );
   }
 
   function matchesRamdaMethod(path, name) {
