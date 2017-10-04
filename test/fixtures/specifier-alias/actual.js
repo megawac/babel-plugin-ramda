@@ -1,5 +1,6 @@
 import {add, map as map1} from 'ramda';
 
-let mapper = map(add(1));
+let map = () => {};
+let mapper = map(map1(add(1)));
 
 mapper([1, 2, 3]);
