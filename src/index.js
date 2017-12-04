@@ -1,4 +1,5 @@
 import resolveModule from './modules';
+import { addNamed } from '@babel/helper-module-imports'
 
 const SPECIAL_TYPES = ['isMemberExpression', 'isProperty'];
 
@@ -18,7 +19,7 @@ export default function({ types: t }) {
   function importMethod(methodName, file) {
     if (!selectedMethods[methodName]) {
       let path = resolveModule(methodName);
-      selectedMethods[methodName] = file.addImport(path, 'default');
+      selectedMethods[methodName] = addNamed(file.path, 'default', path)
     }
     return t.clone(selectedMethods[methodName]);
   }
