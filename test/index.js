@@ -14,12 +14,26 @@ describe("Ramda modularized builds", () => {
     const actualFile = path.join(fixtureDir, "actual.js");
     const expectedFile = path.join(fixtureDir, "expected.js");
 
-    it(`should work with ${caseName.split("-").join(" ")}`, () => {
-      const actual = transformFileSync(actualFile, {
-        plugins: [plugin]
-      }).code;
-      const expected = fs.readFileSync(expectedFile).toString();
-      assert.equal(trim(actual), trim(expected));
+    describe(`should work with ${caseName.split("-").join(" ")}`, () => {
+      // Programatically test with the useES option both on and off
+      specify('src', () => {
+        const actual = transformFileSync(actualFile, {
+          plugins: [plugin]
+        }).code;
+        const expected = fs.readFileSync(expectedFile).toString();
+        assert.equal(trim(actual), trim(expected));
+      });
+
+      specify('es', () => {
+        const actual = transformFileSync(actualFile, {
+          plugins: [[plugin, { "useES": true }]]
+        }).code;
+
+        // The only difference is that src should be replaced with es. This way, no changes to
+        // the tests are needed to cover testing of useES.
+        const expected = fs.readFileSync(expectedFile).toString().replace(/src/g, 'es');
+        assert.equal(trim(actual), trim(expected));
+      });
     });
   });
 
