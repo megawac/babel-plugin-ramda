@@ -15,9 +15,9 @@ export default function({ types: t }) {
       selectedMethods;
 
   // Import a ramda method and return the computed import identifier
-  function importMethod(methodName, file) {
+  function importMethod(useES, methodName, file) {
     if (!selectedMethods[methodName]) {
-      let path = resolveModule(methodName);
+      let path = resolveModule(useES, methodName);
       selectedMethods[methodName] = file.addImport(path, 'default');
     }
     return t.clone(selectedMethods[methodName]);
@@ -62,11 +62,12 @@ export default function({ types: t }) {
           path.remove();
         }
       },
-      ExportNamedDeclaration(path) {
+      ExportNamedDeclaration(path, state) {
         let { node, hub } = path;
+        let { useES } = state.opts;
         if (node.source && node.source.value === 'ramda') {
           let specifiers = node.specifiers.map(spec => {
-            let importIdentifier = importMethod(spec.exported.name, hub.file);
+            let importIdentifier = importMethod(useES, spec.exported.name, hub.file);
             let exportIdentifier = t.identifier(spec.local.name);
             return t.exportSpecifier(importIdentifier, exportIdentifier);
           });
@@ -80,45 +81,49 @@ export default function({ types: t }) {
           throw new Error('`export * from "ramda"` defeats the purpose of babel-plugin-ramda');
         }
       },
-      CallExpression(path) {
+      CallExpression(path, state) {
         let { node, hub } = path;
         let { name } = node.callee;
+        let { useES } = state.opts;
         if (!t.isIdentifier(node.callee)) return;
         if (matchesRamdaMethod(path, name)) {
-          node.callee = importMethod(specified[name], hub.file);
+          node.callee = importMethod(useES, specified[name], hub.file);
         }
         if (node.arguments) {
           node.arguments = node.arguments.map(arg => {
             let { name } = arg;
             return matchesRamdaMethod(path, name)
-              ? importMethod(specified[name], hub.file)
+              ? importMethod(useES, specified[name], hub.file)
               : arg;
           });
         }
       },
-      MemberExpression(path) {
+      MemberExpression(path, state) {
         let { node } = path;
         let objectName = node.object.name;
+        let { useES } = state.opts;
         if (!matchesRamda(path, objectName)) return;
         // R.foo() -> foo()
-        let newNode = importMethod(node.property.name, path.hub.file);
+        let newNode = importMethod(useES, node.property.name, path.hub.file);
         path.replaceWith({ type: newNode.type, name: newNode.name });
       },
-      Property(path) {
+      Property(path,state) {
         let { node, hub } = path;
+        let { useES } = state.opts;
         if (t.isIdentifier(node.key) && node.computed && matchesRamdaMethod(path, node.key.name)) {
-          node.key = importMethod(specified[node.key.name], hub.file);
+          node.key = importMethod(useES, specified[node.key.name], hub.file);
         }
         if (t.isIdentifier(node.value) && matchesRamdaMethod(path, node.value.name)) {
-          node.value = importMethod(specified[node.value.name], hub.file);
+          node.value = importMethod(useES, specified[node.value.name], hub.file);
         }
       },
-      Identifier(path) {
+      Identifier(path, state) {
         let { node, hub, parent, scope } = path;
 
         let { name } = node;
+        let { useES } = state.opts;
         if (matchesRamdaMethod(path, name) && !isSpecialTypes(t, parent)) {
-          let newNode = importMethod(specified[name], hub.file);
+          let newNode = importMethod(useES, specified[name], hub.file);
           path.replaceWith({ type: newNode.type, name: newNode.name });
         } else if (matchesRamda(path, name)) {
           // #19, nullify direct references to the ramda import (for apply/spread/etc)
