@@ -12,6 +12,7 @@ export default function({ types: t }) {
   // these in the `Program` visitor in order to support running the
   // plugin in watch mode or on multiple files.
   let ramdas,
+      removablePaths,
       specified,
       selectedMethods;
 
@@ -45,9 +46,13 @@ export default function({ types: t }) {
         enter() {
           // Track the variables used to import ramda
           ramdas = Object.create(null);
+          removablePaths = [];
           specified = Object.create(null);
           // Track the methods that have already been used to prevent dupe imports
           selectedMethods = Object.create(null);
+        },
+        exit() {
+          removablePaths.forEach(path => path.remove());
         }
       },
       ImportDeclaration(path) {
@@ -60,7 +65,7 @@ export default function({ types: t }) {
               ramdas[spec.local.name] = true;
             }
           });
-          path.remove();
+          removablePaths.push(path);
         }
       },
       ExportNamedDeclaration(path, state) {
