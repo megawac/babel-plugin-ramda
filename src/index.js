@@ -131,10 +131,6 @@ export default function({ types: t }) {
         if (matchesRamdaMethod(path, name) && !isSpecialTypes(t, parent)) {
           let newNode = importMethod(useES, specified[name], hub.file);
           path.replaceWith({ type: newNode.type, name: newNode.name });
-        } else if (matchesRamda(path, name)) {
-          // #19, nullify direct references to the ramda import (for apply/spread/etc)
-          let replacementNode = t.nullLiteral();
-          path.replaceWith(replacementNode);
         }
       }
     }
