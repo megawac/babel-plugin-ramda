@@ -5,13 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.foo = exports.var2 = exports.random = exports.all = exports.any = undefined;
 
-var _all = require('ramda/src/all');
+var _all2 = require('ramda/src/all');
 
-var _all2 = _interopRequireDefault(_all);
+var _all3 = _interopRequireDefault(_all2);
 
-var _any = require('ramda/src/any');
+var _any2 = require('ramda/src/any');
 
-var _any2 = _interopRequireDefault(_any);
+var _any3 = _interopRequireDefault(_any2);
 
 var _bar = require('bar');
 
@@ -24,8 +24,8 @@ Object.defineProperty(exports, 'foo', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.any = _any2.default;
-exports.all = _all2.default;
+exports.any = _any3.default;
+exports.all = _all3.default;
 
 
 var random = 1;

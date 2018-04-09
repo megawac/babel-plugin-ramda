@@ -1,3 +1,4 @@
+import { addDefault } from '@babel/helper-module-imports';
 import resolveModule from './modules';
 
 const SPECIAL_TYPES = ['isMemberExpression', 'isProperty'];
@@ -11,6 +12,7 @@ export default function({ types: t }) {
   // these in the `Program` visitor in order to support running the
   // plugin in watch mode or on multiple files.
   let ramdas,
+      removablePaths,
       specified,
       selectedMethods;
 
@@ -18,7 +20,7 @@ export default function({ types: t }) {
   function importMethod(useES, methodName, file) {
     if (!selectedMethods[methodName]) {
       let path = resolveModule(useES, methodName);
-      selectedMethods[methodName] = file.addImport(path, 'default');
+      selectedMethods[methodName] = addDefault(file.path, path, { nameHint: methodName });
     }
     return t.clone(selectedMethods[methodName]);
   }
@@ -44,9 +46,13 @@ export default function({ types: t }) {
         enter() {
           // Track the variables used to import ramda
           ramdas = Object.create(null);
+          removablePaths = [];
           specified = Object.create(null);
           // Track the methods that have already been used to prevent dupe imports
           selectedMethods = Object.create(null);
+        },
+        exit() {
+          removablePaths.forEach(path => path.remove());
         }
       },
       ImportDeclaration(path) {
@@ -59,7 +65,7 @@ export default function({ types: t }) {
               ramdas[spec.local.name] = true;
             }
           });
-          path.remove();
+          removablePaths.push(path);
         }
       },
       ExportNamedDeclaration(path, state) {
@@ -125,10 +131,6 @@ export default function({ types: t }) {
         if (matchesRamdaMethod(path, name) && !isSpecialTypes(t, parent)) {
           let newNode = importMethod(useES, specified[name], hub.file);
           path.replaceWith({ type: newNode.type, name: newNode.name });
-        } else if (matchesRamda(path, name)) {
-          // #19, nullify direct references to the ramda import (for apply/spread/etc)
-          let replacementNode = t.nullLiteral();
-          path.replaceWith(replacementNode);
         }
       }
     }
