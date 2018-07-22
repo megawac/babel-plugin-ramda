@@ -52,7 +52,9 @@ export default function({ types: t }) {
           selectedMethods = Object.create(null);
         },
         exit() {
-          removablePaths.forEach(path => path.remove());
+          removablePaths
+            .filter(path => !path.removed)
+            .forEach(path => path.remove());
         }
       },
       ImportDeclaration(path) {
