@@ -12,11 +12,11 @@
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.0.0",
     "mocha": "^2.2.5",
-    "ramda": "^0.23.0"
+    "ramda": "^0.25.0"
   },
   "dependencies": {
-    "@babel/helper-module-imports": "^7.0.0-beta.40",
-    "ramda": "0.x"
+    "@babel/helper-module-imports": "^7.0.0",
+    "ramda": "*"
   },
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib",
