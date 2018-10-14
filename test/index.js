@@ -1,9 +1,9 @@
 import path from "path";
 import fs from "fs";
 import assert from "assert";
-import {transformFileSync} from "babel-core";
+import { transformFileSync } from "@babel/core";
 import plugin from "../src/index";
-import {trim} from "ramda";
+import { trim } from "ramda";
 
 describe("Ramda modularized builds", () => {
   const fixturesDir = path.join(__dirname, "fixtures");
@@ -15,23 +15,25 @@ describe("Ramda modularized builds", () => {
     const expectedFile = path.join(fixtureDir, "expected.js");
 
     describe(`should work with ${caseName.split("-").join(" ")}`, () => {
-      // Programatically test with the useES option both on and off
-      specify('src', () => {
+      // Programmatically test with the useES option both on and off
+      specify("src", () => {
         const actual = transformFileSync(actualFile, {
           plugins: [plugin]
-        }).code;
-        const expected = fs.readFileSync(expectedFile).toString();
+        }).toString();
+        const expected = transformFileSync(expectedFile).toString();
         assert.equal(trim(actual), trim(expected));
       });
 
-      specify('es', () => {
+      specify("es", () => {
         const actual = transformFileSync(actualFile, {
-          plugins: [[plugin, { "useES": true }]]
-        }).code;
+          plugins: [[plugin, { useES: true }]]
+        }).toString();
 
         // The only difference is that src should be replaced with es. This way, no changes to
         // the tests are needed to cover testing of useES.
-        const expected = fs.readFileSync(expectedFile).toString().replace(/src/g, 'es');
+        const expected = transformFileSync(expectedFile)
+          .toString()
+          .replace(/src/g, "es");
         assert.equal(trim(actual), trim(expected));
       });
     });
