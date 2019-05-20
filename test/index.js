@@ -18,21 +18,23 @@ describe("Ramda modularized builds", () => {
       // Programmatically test with the useES option both on and off
       specify("src", () => {
         const actual = transformFileSync(actualFile, {
+          compact: true,
           plugins: [plugin]
-        }).toString();
-        const expected = transformFileSync(expectedFile).toString();
+        }).code;
+        const expected = transformFileSync(expectedFile, { compact: true }).code;
         assert.equal(trim(actual), trim(expected));
       });
 
       specify("es", () => {
         const actual = transformFileSync(actualFile, {
+          compact: true,
           plugins: [[plugin, { useES: true }]]
-        }).toString();
+        }).code;
 
         // The only difference is that src should be replaced with es. This way, no changes to
         // the tests are needed to cover testing of useES.
-        const expected = transformFileSync(expectedFile)
-          .toString()
+        const expected = transformFileSync(expectedFile, { compact: true })
+          .code
           .replace(/src/g, "es");
         assert.equal(trim(actual), trim(expected));
       });
