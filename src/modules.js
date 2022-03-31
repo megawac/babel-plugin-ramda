@@ -1,4 +1,4 @@
-import {contains, merge} from 'ramda';
+import {contains, mergeRight} from 'ramda';
 import fs from 'fs';
 import Module from 'module';
 import path from 'path';
@@ -10,7 +10,7 @@ function getDirectories(srcPath) {
     fs.statSync(path.join(srcPath, filePath)).isDirectory());
 }
 
-const _ramdaPath = path.dirname(Module._resolveFilename('ramda', merge(new Module, {
+const _ramdaPath = path.dirname(Module._resolveFilename('ramda', mergeRight(new Module, {
   'paths': Module._nodeModulePaths(process.cwd())
 })));
 
