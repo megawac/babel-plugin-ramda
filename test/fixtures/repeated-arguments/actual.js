@@ -1,3 +1,3 @@
-import {compose, merge} from 'ramda';
+import {compose, mergeLeft} from 'ramda';
 
-compose(merge, merge);
+compose(mergeLeft, mergeLeft);
