@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-ramda",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Ramda modularized builds without the hassle",
   "repository": "megawac/babel-plugin-ramda",
   "author": "Graeme Yeates (github.com/megawac) <megawac@gmail.com>",
