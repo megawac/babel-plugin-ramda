@@ -8,7 +8,7 @@
   "license": "WTFPL",
   "devDependencies": {
     "@babel/cli": "7.1.2",
-    "@babel/core": "7.1.2",
+    "@babel/core": "7.20.7",
     "@babel/preset-env": "7.1.0",
     "@babel/register": "7.0.0",
     "mocha": "^2.2.5",
